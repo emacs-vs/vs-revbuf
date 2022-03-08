@@ -160,5 +160,25 @@ Optional argument INDEX is used to loop through BUFS."
       (vs-revbuf--all-valid-buffers)
       (vs-revbuf--all-invalid-buffers))))
 
+(defun vs-revbuf--focus-in (&rest _)
+  "Hook when focus in."
+  (when (frame-focus-state) (vs-revbuf-all)))
+
+(defun vs-revbuf-mode--enable ()
+  "Enable function `vs-revbuf-mode'."
+  (add-function :after after-focus-change-function #'vs-revbuf--focus-in))
+
+(defun vs-revbuf-mode--disable ()
+  "Disable function `vs-revbuf-mode'."
+  (remove-function after-focus-change-function #'vs-revbuf--focus-in))
+
+;;;###autoload
+(define-minor-mode vs-revbuf-mode
+  "Minor mode 'vs-revbuf-mode'."
+  :global t
+  :require 'vs-revbuf-mode
+  :group 'vs-revbuf
+  (if vs-revbuf-mode (vs-revbuf-mode--enable) (vs-revbuf-mode--disable)))
+
 (provide 'vs-revbuf)
 ;;; vs-revbuf.el ends here
