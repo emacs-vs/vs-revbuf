@@ -6,6 +6,10 @@
 
 [![CI](https://github.com/emacs-vs/vs-revbuf/actions/workflows/test.yml/badge.svg)](https://github.com/emacs-vs/vs-revbuf/actions/workflows/test.yml)
 
+| Emacs (with `vs-revbuf`) | Visual Studio   |
+|:------------------------:|:---------------:|
+| ![](etc/emacs.png)       | ![](etc/vs.png) |
+
 ## Contribute
 
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](http://makeapullrequest.com)
