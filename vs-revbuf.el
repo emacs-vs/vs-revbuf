@@ -37,6 +37,17 @@
 
 (require 'fextern)
 
+(defgroup vs-revbuf nil
+  "Revert buffers like Visual Studio."
+  :prefix "vs-revbuf-"
+  :group 'tool
+  :link '(url-link :tag "Repository" "https://github.com/emacs-vs/vs-revbuf"))
+
+(defcustom vs-revbuf-ask-unsaved-changes-only nil
+  "Ask only when there are unsaved changes."
+  :type 'boolean
+  :group 'vs-revbuf)
+
 (defconst vs-revbuf--msg-edit-extern "
 The file has been changed externally, and has no unsaved changes inside this editor.
 Do you want to reload it? "
@@ -121,22 +132,23 @@ Optional argument INDEX is used to loop through BUFS."
   (when-let*
       ((vs-revbuf--interactive-p t)
        (index (or index 0)) (buf (nth index bufs))
-       (path (buffer-file-name buf))
-       (prompt (concat path "\n"
-                       (if (buffer-modified-p buf)
-                           vs-revbuf--msg-edit-extern-and-unsaved
-                         vs-revbuf--msg-edit-extern)))
-       (answer (completing-read prompt '("Yes" "Yes to All" "No" "No to All"))))
-    (cl-incf index)
-    (pcase answer
-      ("Yes"
-       (with-current-buffer buf (vs-revbuf-no-confirm))
-       (vs-revbuf-ask-all bufs index))
-      ("Yes to All"
-       (vs-revbuf--all-valid-buffers)
-       (vs-revbuf--all-invalid-buffers))
-      ("No" (vs-revbuf-ask-all bufs index))
-      ("No to All"))))  ; Does nothing, exit
+       (path (buffer-file-name buf)))
+    (let* ((modified (buffer-modified-p buf))
+           (prompt (concat path "\n"
+                           (if modified vs-revbuf--msg-edit-extern-and-unsaved
+                             vs-revbuf--msg-edit-extern)))
+           (answer (if (and vs-revbuf-ask-unsaved-changes-only (not modified)) "Yes"
+                     (completing-read prompt '("Yes" "Yes to All" "No" "No to All")))))
+      (cl-incf index)
+      (pcase answer
+        ("Yes"
+         (with-current-buffer buf (vs-revbuf-no-confirm))
+         (vs-revbuf-ask-all bufs index))
+        ("Yes to All"
+         (vs-revbuf--all-valid-buffers)
+         (vs-revbuf--all-invalid-buffers))
+        ("No" (vs-revbuf-ask-all bufs index))
+        ("No to All")))))  ; Does nothing, exit
 
 ;;;###autoload
 (defun vs-revbuf-all ()
