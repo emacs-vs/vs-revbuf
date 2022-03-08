@@ -89,23 +89,22 @@ This occurs when file was opened but has moved to somewhere else externally."
 (defun vs-revbuf-no-confirm ()
   "Revert buffer without confirmation."
   (interactive)
-  (jcs-with-no-redisplay
-    ;; Record all the enabled mode that you want to remain enabled after
-    ;; revert the file.
-    (let ((was-readonly (if buffer-read-only 1 -1))
-          (was-flycheck (if (and (featurep 'flycheck) flycheck-mode) 1 -1))
-          (was-page-lines (if (and (featurep 'page-break-lines) page-break-lines-mode) 1 -1)))
-      ;; Revert it!
-      (ignore-errors (revert-buffer :ignore-auto :noconfirm :preserve-modes))
-      (fextern-update-buffer-save-string)
-      (when (and (featurep 'line-reminder)
-                 (or vs-revbuf--interactive-p
-                     (called-interactively-p 'interactive)))
-        (line-reminder-clear-reminder-lines-sign))
-      ;; Revert all the enabled modes
-      (read-only-mode was-readonly)
-      (when (featurep 'flycheck) (flycheck-mode was-flycheck))
-      (when (featurep 'page-break-lines) (page-break-lines-mode was-page-lines)))))
+  ;; Record all the enabled mode that you want to remain enabled after
+  ;; revert the file.
+  (let ((was-readonly buffer-read-only)
+        (was-flycheck (and (featurep 'flycheck) flycheck-mode))
+        (was-page-lines (and (featurep 'page-break-lines) page-break-lines-mode)))
+    ;; Revert it!
+    (ignore-errors (revert-buffer :ignore-auto :noconfirm :preserve-modes))
+    (fextern-update-buffer-save-string)
+    (when (and (featurep 'line-reminder)
+               (or vs-revbuf--interactive-p
+                   (called-interactively-p 'interactive)))
+      (line-reminder-clear-reminder-lines-sign))
+    ;; Revert all the enabled modes
+    (when was-readonly (read-only-mode 1))
+    (when was-flycheck (flycheck-mode 1))
+    (when was-page-lines (page-break-lines-mode 1))))
 
 (defun vs-revbuf--all-invalid-buffers ()
   "Revert all invalid buffers."
