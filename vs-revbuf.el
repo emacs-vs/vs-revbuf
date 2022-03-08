@@ -99,8 +99,8 @@ This occurs when file was opened but has moved to somewhere else externally."
     (ignore-errors (revert-buffer :ignore-auto :noconfirm :preserve-modes))
     (fextern-update-buffer-save-string)
     (when (and (featurep 'line-reminder)
-               (or (called-interactively-p 'interactive)
-                   vs-revbuf--interactive-p))
+               (or vs-revbuf--interactive-p
+                   (called-interactively-p 'interactive)))
       (line-reminder-clear-reminder-lines-sign))
     ;; Revert all the enabled modes
     (read-only-mode was-readonly)
@@ -120,7 +120,8 @@ This occurs when file was opened but has moved to somewhere else externally."
   "Revert all valid buffers."
   (dolist (buf (fextern--valid-buffer-list))
     (with-current-buffer buf
-      (unless (buffer-modified-p) (vs-revbuf-no-confirm)))))
+      (when (or (not (buffer-modified-p)) vs-revbuf--interactive-p)
+        (vs-revbuf-no-confirm)))))
 
 (defun vs-revbuf-ask-all (bufs &optional index)
   "Ask to revert all buffers decided by ANSWER.
@@ -130,8 +131,7 @@ still in this editor.
 
 Optional argument INDEX is used to loop through BUFS."
   (when-let*
-      ((vs-revbuf--interactive-p t)
-       (index (or index 0)) (buf (nth index bufs))
+      ((index (or index 0)) (buf (nth index bufs))
        (path (buffer-file-name buf)))
     (let* ((modified (buffer-modified-p buf))
            (prompt (concat path "\n"
@@ -154,7 +154,8 @@ Optional argument INDEX is used to loop through BUFS."
 (defun vs-revbuf-all ()
   "Refresh all open file buffers without confirmation."
   (interactive)
-  (if-let ((bufs (fextern-buffers-edit-externally)))
+  (if-let ((bufs (fextern-buffers-edit-externally))
+           (vs-revbuf--interactive-p t))
       (vs-revbuf-ask-all bufs)
     (let ((vs-revbuf--interactive-p (called-interactively-p 'interactive)))
       (vs-revbuf--all-valid-buffers)
