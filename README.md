@@ -12,7 +12,12 @@
 
 ## 🔨 Usage
 
-
+```el
+(leaf vs-revbuf
+  :hook (after-init-hook . vs-revbuf-mode)
+  :init
+  (setq vs-revbuf-ask-unsaved-changes-only t))
+```
 
 ## Contribute
 
