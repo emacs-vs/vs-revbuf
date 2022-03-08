@@ -38,6 +38,13 @@
 (require 'fextern)
 
 ;;
+;; (@* "Externals" )
+;;
+
+(declare-function flycheck-mode "ext:flycheck.el")
+(declare-function page-break-lines-mode "ext:page-break-lines.el")
+
+;;
 ;; (@* "Util" )
 ;;
 
@@ -59,19 +66,19 @@ This occurs when file was opened but has moved to somewhere else externally."
   (interactive)
   ;; Record all the enabled mode that you want to remain enabled after
   ;; revert the file.
-  (let ((was-flycheck (if (and (featurep 'flycheck) flycheck-mode) 1 -1))
-        (was-readonly (if buffer-read-only 1 -1))
-        (was-g-hl-line (if global-hl-line-mode 1 -1))
-        (was-page-lines (if page-break-lines-mode 1 -1)))
+  (let ((was-readonly (if buffer-read-only 1 -1))
+        (was-g-hl-line (if (and (featurep 'hl-line) global-hl-line-mode) 1 -1))
+        (was-flycheck (if (and (featurep 'flycheck) flycheck-mode) 1 -1))
+        (was-page-lines (if (and (featurep 'page-break-lines) page-break-lines-mode) 1 -1)))
     ;; Revert it!
     (ignore-errors (revert-buffer :ignore-auto :noconfirm :preserve-modes))
     (fextern-update-buffer-save-string)
     (when (featurep 'line-reminder) (line-reminder-clear-reminder-lines-sign))
     ;; Revert all the enabled mode.
-    (flycheck-mode was-flycheck)
     (read-only-mode was-readonly)
-    (global-hl-line-mode was-g-hl-line)
-    (page-break-lines-mode was-page-lines)))
+    (when (featurep 'hl-line) (global-hl-line-mode was-g-hl-line))
+    (when (featurep 'flycheck) (flycheck-mode was-flycheck))
+    (when (featurep 'page-break-lines) (page-break-lines-mode was-page-lines))))
 
 (defun vs-revbuf--all-invalid-buffers ()
   "Revert all invalid buffers."
