@@ -47,6 +47,9 @@ The file has unsaved changes inside this editor and has been changed externally.
 Do you want to reload it and lose the changes made in this source editor? "
   "Message to display when edit externally and there are unsaved changes.")
 
+(defvar vs-revbuf--interactive-p nil
+  "Internal use only.")
+
 ;;
 ;; (@* "Externals" )
 ;;
@@ -71,7 +74,8 @@ This occurs when file was opened but has moved to somewhere else externally."
 ;; (@* "Core" )
 ;;
 
-(defun vs-revbuf--no-confirm ()
+;;;###autoload
+(defun vs-revbuf-no-confirm ()
   "Revert buffer without confirmation."
   (interactive)
   ;; Record all the enabled mode that you want to remain enabled after
@@ -83,8 +87,11 @@ This occurs when file was opened but has moved to somewhere else externally."
     ;; Revert it!
     (ignore-errors (revert-buffer :ignore-auto :noconfirm :preserve-modes))
     (fextern-update-buffer-save-string)
-    (when (featurep 'line-reminder) (line-reminder-clear-reminder-lines-sign))
-    ;; Revert all the enabled mode.
+    (when (and (featurep 'line-reminder)
+               (or (called-interactively-p 'interactive)
+                   vs-revbuf--interactive-p))
+      (line-reminder-clear-reminder-lines-sign))
+    ;; Revert all the enabled modes
     (read-only-mode was-readonly)
     (when (featurep 'hl-line) (global-hl-line-mode was-g-hl-line))
     (when (featurep 'flycheck) (flycheck-mode was-flycheck))
@@ -102,7 +109,7 @@ This occurs when file was opened but has moved to somewhere else externally."
   "Revert all valid buffers."
   (dolist (buf (fextern--valid-buffer-list))
     (with-current-buffer buf
-      (unless (buffer-modified-p) (vs-revbuf--no-confirm)))))
+      (unless (buffer-modified-p) (vs-revbuf-no-confirm)))))
 
 (defun vs-revbuf-ask-all (bufs &optional index)
   "Ask to revert all buffers decided by ANSWER.
@@ -112,7 +119,8 @@ still in this editor.
 
 Optional argument INDEX is used to loop through BUFS."
   (when-let*
-      ((index (or index 0)) (buf (nth index bufs))
+      ((vs-revbuf--interactive-p t)
+       (index (or index 0)) (buf (nth index bufs))
        (path (buffer-file-name buf))
        (prompt (concat path "\n"
                        (if (buffer-modified-p buf)
@@ -122,7 +130,7 @@ Optional argument INDEX is used to loop through BUFS."
     (cl-incf index)
     (pcase answer
       ("Yes"
-       (with-current-buffer buf (vs-revbuf--no-confirm))
+       (with-current-buffer buf (vs-revbuf-no-confirm))
        (vs-revbuf-ask-all bufs index))
       ("Yes to All"
        (vs-revbuf--all-valid-buffers)
@@ -136,8 +144,9 @@ Optional argument INDEX is used to loop through BUFS."
   (interactive)
   (if-let ((bufs (fextern-buffers-edit-externally)))
       (vs-revbuf-ask-all bufs)
-    (vs-revbuf--all-valid-buffers)
-    (vs-revbuf--all-invalid-buffers)))
+    (let ((vs-revbuf--interactive-p (called-interactively-p 'interactive)))
+      (vs-revbuf--all-valid-buffers)
+      (vs-revbuf--all-invalid-buffers))))
 
 (provide 'vs-revbuf)
 ;;; vs-revbuf.el ends here
