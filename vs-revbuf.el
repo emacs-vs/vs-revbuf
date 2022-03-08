@@ -7,7 +7,7 @@
 ;; Description: Revert buffers like Visual Studio.
 ;; Keyword: revert vs
 ;; Version: 0.1.0
-;; Package-Requires: ((emacs "26.1") (fextern "0.1.0"))
+;; Package-Requires: ((emacs "27.1") (fextern "0.1.0"))
 ;; URL: https://github.com/emacs-vs/vs-revbuf
 
 ;; This file is NOT part of GNU Emacs.
