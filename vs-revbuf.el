@@ -37,6 +37,16 @@
 
 (require 'fextern)
 
+(defconst vs-revbuf--msg-edit-extern "
+The file has been changed externally, and has no unsaved changes inside this editor.
+Do you want to reload it? "
+  "Message to display when only edit externally.")
+
+(defconst vs-revbuf--msg-edit-extern-and-unsaved "
+The file has unsaved changes inside this editor and has been changed externally.
+Do you want to reload it and lose the changes made in this source editor? "
+  "Message to display when edit externally and there are unsaved changes.")
+
 ;;
 ;; (@* "Externals" )
 ;;
@@ -106,12 +116,8 @@ Optional argument INDEX is used to loop through BUFS."
        (path (buffer-file-name buf))
        (prompt (concat path "\n"
                        (if (buffer-modified-p buf)
-                           "
-The file has unsaved changes inside this editor and has been changed externally.
-Do you want to reload it and lose the changes made in this source editor? "
-                         "
-The file has been changed externally, and has no unsaved changes inside this editor.
-Do you want to reload it? ")))
+                           vs-revbuf--msg-edit-extern-and-unsaved
+                         vs-revbuf--msg-edit-extern)))
        (answer (completing-read prompt '("Yes" "Yes to All" "No" "No to All"))))
     (cl-incf index)
     (pcase answer
