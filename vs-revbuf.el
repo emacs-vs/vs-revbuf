@@ -85,6 +85,12 @@ This occurs when file was opened but has moved to somewhere else externally."
 ;; (@* "Core" )
 ;;
 
+(defun vs-revbuf--buffer-identical ()
+  "Return t if the buffer is identical on the disk."
+  (let ((buffer-md5 (md5 (buffer-string)))
+        (file-md5 (md5 (fextern--file-content buffer-file-name))))
+    (string= buffer-md5 file-md5)))
+
 ;;;###autoload
 (defun vs-revbuf-no-confirm ()
   "Revert buffer without confirmation."
@@ -118,7 +124,8 @@ This occurs when file was opened but has moved to somewhere else externally."
   "Revert all valid buffers."
   (dolist (buf (fextern--valid-buffer-list))
     (with-current-buffer buf
-      (when (or (not (buffer-modified-p)) vs-revbuf--interactive-p)
+      (when (and (or (not (buffer-modified-p)) vs-revbuf--interactive-p)
+                 (not (vs-revbuf--buffer-identical)))
         (vs-revbuf-no-confirm)))))
 
 (defun vs-revbuf-ask-all (bufs &optional index)
