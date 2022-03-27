@@ -48,6 +48,11 @@
   :type 'boolean
   :group 'vs-revbuf)
 
+(defcustom vs-revbuf-on-identical nil
+  "Revert buffers even buffer and file (on dist) have the same content."
+  :type 'boolean
+  :group 'vs-revbuf)
+
 (defconst vs-revbuf--msg-edit-extern "
 The file has been changed externally, and has no unsaved changes inside this editor.
 Do you want to reload it? "
@@ -124,8 +129,11 @@ This occurs when file was opened but has moved to somewhere else externally."
   "Revert all valid buffers."
   (dolist (buf (fextern--valid-buffer-list))
     (with-current-buffer buf
-      (when (and (or (not (buffer-modified-p)) vs-revbuf--interactive-p)
-                 (not (vs-revbuf--buffer-identical)))
+      (when (and
+             (or (not (buffer-modified-p)) vs-revbuf--interactive-p)
+             ;; Handle identical condition
+             (or vs-revbuf-on-identical
+                 (not (vs-revbuf--buffer-identical))))
         (vs-revbuf-no-confirm)))))
 
 (defun vs-revbuf-ask-all (bufs &optional index)
