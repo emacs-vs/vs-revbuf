@@ -56,12 +56,17 @@
 (defconst vs-revbuf--msg-edit-extern "
 The file has been changed externally, and has no unsaved changes inside this editor.
 Do you want to reload it? "
-  "Message to display when only edit externally.")
+  "Message when only edited externally.")
 
 (defconst vs-revbuf--msg-edit-extern-and-unsaved "
 The file has unsaved changes inside this editor and has been changed externally.
 Do you want to reload it and lose the changes made in this source editor? "
-  "Message to display when edit externally and there are unsaved changes.")
+  "Message when edited externally and there are unsaved changes.")
+
+(defconst vs-revbuf--msg-edit-moved "
+The file has unsaved changes inside this editor and has been moved (not found) externally.
+Do you want to kill it and lose the changes made in this source editor? "
+  "Message when buffer is modify, but file has moved externally.")
 
 (defvar vs-revbuf--interactive-p nil
   "Internal use only.")
@@ -85,6 +90,11 @@ This occurs when file was opened but has moved to somewhere else externally."
 (defun vs-revbuf--invalid-buffer-list ()
   "Return a list of invalid buffers."
   (cl-remove-if-not #'vs-revbuf--invalid-buffer-p (buffer-list)))
+
+(defun vs-revbuf--kill-buffer-no-confirm ()
+  "Kill modified/unmodified buffer without confirming."
+  (set-buffer-modified-p nil)
+  (let (kill-buffer-query-functions) (kill-this-buffer)))
 
 ;;
 ;; (@* "Core" )
@@ -121,9 +131,11 @@ This occurs when file was opened but has moved to somewhere else externally."
   "Revert all invalid buffers."
   (dolist (buf (vs-revbuf--invalid-buffer-list))
     (with-current-buffer buf
-      (when fextern-buffer-save-string-md5  ; this present only after first save!
-        (set-buffer-modified-p nil)
-        (let (kill-buffer-query-functions) (kill-this-buffer))))))
+      (unless fextern-buffer-newly-created
+        (when (and (buffer-modified-p)
+                   (yes-or-no-p (concat buffer-file-name "\n"
+                                        vs-revbuf--msg-edit-moved)))
+          (vs-revbuf--kill-buffer-no-confirm))))))
 
 (defun vs-revbuf--all-valid-buffers ()
   "Revert all valid buffers."
