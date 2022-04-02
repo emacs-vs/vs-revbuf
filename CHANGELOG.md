@@ -9,6 +9,7 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 > Released N/A
 
 * Add new option `vs-revbuf-on-identical` (5f0baf3a01f56f2b1d5df38eb71d38c82fc806d2)
+* Add the way to handle moved buffer (bf2c9b89d8a8d32544426e17403b4c479dcc29b6)
 
 ## 0.1.0
 > Released Mar 8, 2022
