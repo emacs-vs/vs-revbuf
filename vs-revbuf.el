@@ -132,9 +132,10 @@ This occurs when file was opened but has moved to somewhere else externally."
   (dolist (buf (vs-revbuf--invalid-buffer-list))
     (with-current-buffer buf
       (unless fextern-buffer-newly-created
-        (when (and (buffer-modified-p)
-                   (yes-or-no-p (concat buffer-file-name "\n"
-                                        vs-revbuf--msg-edit-moved)))
+        (if (buffer-modified-p)
+            (when (yes-or-no-p (concat buffer-file-name "\n"
+                                       vs-revbuf--msg-edit-moved))
+              (vs-revbuf--kill-buffer-no-confirm))
           (vs-revbuf--kill-buffer-no-confirm))))))
 
 (defun vs-revbuf--all-valid-buffers ()
