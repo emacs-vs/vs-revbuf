@@ -80,7 +80,11 @@ Do you want to kill it and lose the changes made in this source editor? "
 ;; (@* "Externals" )
 ;;
 
+(defvar flycheck-mode)
+(defvar page-break-lines-mode)
+
 (declare-function flycheck-mode "ext:flycheck.el")
+(declare-function line-reminder-clear-reminder-lines-sign "ext:line-reminder.el")
 (declare-function page-break-lines-mode "ext:page-break-lines.el")
 
 ;;
