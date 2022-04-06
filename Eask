@@ -1,5 +1,6 @@
-(package "vs-revbuf" "0.1.1" "Revert buffers like Visual Studio")
-
+(package "vs-revbuf"
+         "0.1.1"
+         "Revert buffers like Visual Studio")
 (package-file "vs-revbuf.el")
 
 (source "jcs-elpa")
