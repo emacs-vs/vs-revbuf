@@ -3,7 +3,7 @@
          "Revert buffers like Visual Studio")
 
 (website-url "https://github.com/emacs-vs/vs-revbuf")
-(keywords "revert" "vs")
+(keywords "convenience" "revert" "vs")
 
 (package-file "vs-revbuf.el")
 
