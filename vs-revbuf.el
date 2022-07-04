@@ -7,7 +7,7 @@
 ;; URL: https://github.com/emacs-vs/vs-revbuf
 ;; Version: 0.1.1
 ;; Package-Requires: ((emacs "27.1") (fextern "0.1.0"))
-;; Keywords: revert vs
+;; Keywords: convenience revert vs
 
 ;; This file is NOT part of GNU Emacs.
 
