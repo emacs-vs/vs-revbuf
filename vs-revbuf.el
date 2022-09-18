@@ -201,7 +201,8 @@ Optional argument INDEX is used to loop through BUFS."
 
 (defun vs-revbuf--focus-in (&rest _)
   "Hook when focus in."
-  (when (frame-focus-state) (vs-revbuf-all)))
+  (when (and (frame-focus-state) (null (active-minibuffer-window)))
+    (vs-revbuf-all)))
 
 (defun vs-revbuf-mode--enable ()
   "Enable function `vs-revbuf-mode'."
