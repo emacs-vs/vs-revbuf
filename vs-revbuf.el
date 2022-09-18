@@ -214,7 +214,7 @@ Optional argument INDEX is used to loop through BUFS."
 
 ;;;###autoload
 (define-minor-mode vs-revbuf-mode
-  "Minor mode 'vs-revbuf-mode'."
+  "Minor mode `vs-revbuf-mode'."
   :global t
   :require 'vs-revbuf-mode
   :group 'vs-revbuf
