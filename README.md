@@ -12,7 +12,7 @@
 
 ## 🔨 Usage
 
-```el
+```elisp
 (leaf vs-revbuf
   :hook (after-init-hook . vs-revbuf-mode)
   :init
