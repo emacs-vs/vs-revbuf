@@ -176,7 +176,8 @@ Optional argument INDEX is used to loop through BUFS."
                            (if modified vs-revbuf--msg-edit-extern-and-unsaved
                              vs-revbuf--msg-edit-extern)))
            (answer (if (and vs-revbuf-ask-unsaved-changes-only (not modified)) "Yes"
-                     (completing-read prompt '("Yes" "Yes to All" "No" "No to All")))))
+                     (completing-read prompt '("Yes" "Yes to All" "No" "No to All")
+                                      nil t nil nil "Yes"))))
       (cl-incf index)
       (pcase answer
         ("Yes"
