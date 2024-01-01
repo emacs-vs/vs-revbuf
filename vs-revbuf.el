@@ -1,6 +1,6 @@
 ;;; vs-revbuf.el --- Revert buffers like Visual Studio  -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2022  Shen, Jen-Chieh
+;; Copyright (C) 2022-2024  Shen, Jen-Chieh
 ;; Created date 2022-03-08 19:54:08
 
 ;; Author: Shen, Jen-Chieh <jcs090218@gmail.com>
