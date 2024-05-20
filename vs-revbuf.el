@@ -124,7 +124,8 @@ This occurs when file was opened but has moved to somewhere else externally."
         (was-flycheck (and (featurep 'flycheck) flycheck-mode))
         (was-page-lines (and (featurep 'page-break-lines) page-break-lines-mode)))
     ;; Revert it!
-    (ignore-errors (revert-buffer :ignore-auto :noconfirm :preserve-modes))
+    (let ((lsp-inhibit-lsp-hooks t))
+      (ignore-errors (revert-buffer :ignore-auto :noconfirm :preserve-modes)))
     (fextern-update-buffer-save-string)
     (when (and (featurep 'line-reminder)
                (or vs-revbuf--interactive-p
