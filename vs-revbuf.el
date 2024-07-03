@@ -80,6 +80,7 @@ Do you want to kill it and lose the changes made in this source editor? "
 ;;
 
 (defvar flycheck-mode)
+(defvar lsp-inhibit-lsp-hooks)
 (defvar page-break-lines-mode)
 
 (declare-function flycheck-mode "ext:flycheck.el")
@@ -208,7 +209,8 @@ Optional argument INDEX is used to loop through BUFS."
 
 (defun vs-revbuf-mode--enable ()
   "Enable function `vs-revbuf-mode'."
-  (add-function :after after-focus-change-function #'vs-revbuf--focus-in))
+  (add-function :after after-focus-change-function #'vs-revbuf--focus-in
+                '((depth . 95))))
 
 (defun vs-revbuf-mode--disable ()
   "Disable function `vs-revbuf-mode'."
